@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: ReplicaSet
+metadata:
+  name: vote
+  labels:
+    role: vote
+spec:
+  replicas: 4
+  selector:
+    matchLabels:
+      app: python
+      role: vote
+    matchExpressions:
+      - key: version
+        operator: Exists
+  template:
+    metadata:
+      name: vote
+      labels:
+        app: python
+        role: vote
+        version: v1
+    spec:
+      containers:
+        - name: app
+          image: jcampos15/vote:v1
+          resources:
+            requests:
+              memory: "64Mi"
+              cpu: "50m"
+            limits:
+              memory: "128Mi"
+              cpu: "250m"
