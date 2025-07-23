@@ -4,6 +4,10 @@ kind: Ingress
 metadata:
   name: vote
   namespace: instavote
+  annotations:
+    kubernetes.io/ingress.class: traefik
+    ingressClassName: traefik
+    traefik.ingress.kubernetes.io/router.middlewares: instavote-basic-auth@kubernetescrd
 spec:
   ingressClassName: traefik
   rules:

@@ -11,7 +11,7 @@ metadata:
   name: traefik-ingress-controller
 rules:
   - apiGroups: [""]
-    resources: ["services", "endpoints", "secrets", "nodes"]
+    resources: ["services", "endpoints", "secrets", "nodes", "pods"]
     verbs: ["get", "list", "watch"]
   - apiGroups: ["networking.k8s.io"]
     resources: ["ingresses", "ingressclasses"]
@@ -19,6 +19,33 @@ rules:
   - apiGroups: ["networking.k8s.io"]
     resources: ["ingresses/status"]
     verbs: ["update"]
+  # Rules for Traefik's custom resources (CRDs) under traefik.containo.us
+  - apiGroups: ["traefik.containo.us"]
+    resources:
+      - middlewares
+      - middlewaretcps
+      - ingressroutes
+      - ingressroutetcps
+      - ingressrouteudps
+      - tlsoptions
+      - tlsstores
+      - traefikservices
+      - serverstransports
+    verbs: ["get", "list", "watch"]
+  # IMPORTANT: Add comprehensive rules for Traefik's custom resources under traefik.io
+  # This addresses the new forbidden errors you are seeing.
+  - apiGroups: ["traefik.io"]
+    resources:
+      - middlewares
+      - middlewaretcps
+      - ingressroutes
+      - ingressroutetcps
+      - ingressrouteudps
+      - tlsoptions
+      - tlsstores
+      - traefikservices
+      - serverstransports
+    verbs: ["get", "list", "watch"]
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
@@ -71,6 +98,7 @@ spec:
             - --api.dashboard=true
             - --providers.kubernetesIngress
             - --log.level=INFO
+            - --providers.kubernetesCRD # Ensure this is still enabled
           ports:
             - name: web
               containerPort: 80
@@ -104,3 +132,4 @@ spec:
     - name: admin
       port: 8080
       targetPort: admin
+
