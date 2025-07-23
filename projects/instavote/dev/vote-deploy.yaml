@@ -1,11 +1,17 @@
 apiVersion: apps/v1
-kind: ReplicaSet
+kind: Deployment
 metadata:
   name: vote
   labels:
     role: vote
 spec:
-  replicas: 4
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 2
+      maxUnavailable: 1
+  minReadySeconds: 20
+  replicas: 12
   selector:
     matchLabels:
       app: python
@@ -19,11 +25,11 @@ spec:
       labels:
         app: python
         role: vote
-        version: v1
+        version: v2
     spec:
       containers:
         - name: app
-          image: jcampos15/vote:v1
+          image: jcampos15/vote:v2
           resources:
             requests:
               memory: "64Mi"
