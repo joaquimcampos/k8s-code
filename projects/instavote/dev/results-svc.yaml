@@ -2,10 +2,13 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: results 
-  labels: 
+  name: results
+  labels:
     role: results
 spec:
-  xxx
-
-
+  selector:
+    role: results
+  ports:
+  - port: 80  # if I change this to 8002, then I access in load-bal-external-ip:8002
+    targetPort: 80
+  type: LoadBalancer
