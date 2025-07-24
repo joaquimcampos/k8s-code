@@ -1,27 +1,44 @@
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
+  labels:
+    role: worker
+    tier: back
   name: worker
   namespace: instavote
 spec:
+  minReadySeconds: 20
+  revisionHistoryLimit: 4
   replicas: 2
+  selector:
+    matchLabels:
+      app: java
+      role: worker
+    matchExpressions:
+      - key: version
+        operator: Exists
   strategy:
     type: RollingUpdate
     rollingUpdate:
       maxSurge: 1
       maxUnavailable: 1
-  minReadySeconds: 20
-  xxx
-  xxx
-  selector:
-    xxx
   template:
     metadata:
       name: worker
       labels:
         app: java
         role: worker
+        tier: back
         version: latest
     spec:
       containers:
-      - xxx
+        - name: app
+          image: jcampos15/worker:latest
+          resources:
+            requests:
+              memory: "64Mi"
+              cpu: "50m"
+            limits:
+              memory: "128Mi"
+              cpu: "250m"
