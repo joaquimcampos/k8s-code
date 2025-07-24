@@ -1,8 +1,44 @@
+---
 apiVersion: apps/v1
 kind: Deployment
-metadata: 
+metadata:
+  labels:
+    role: results
+    tier: front
   name: results
   namespace: instavote
-spec: 
-  xxx
-
+spec:
+  minReadySeconds: 5  # default = 0
+  replicas: 2  # default = 1
+  revisionHistoryLimit: 4  # default = 10
+  selector:
+    matchLabels:
+      app: node
+      role: results
+    matchExpressions:
+      - key: version
+        operator: Exists
+  strategy:
+    type: RollingUpdate  # default
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+  template:
+    metadata:
+      name: results
+      labels:
+        app: node
+        role: results
+        tier: front
+        version: latest
+    spec:
+      containers:
+        - name: app
+          image: jcampos15/result:latest
+          resources:
+            requests:
+              memory: "64Mi"
+              cpu: "50m"
+            limits:
+              memory: "128Mi"
+              cpu: "250m"
