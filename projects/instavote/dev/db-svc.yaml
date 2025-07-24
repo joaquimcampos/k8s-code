@@ -11,6 +11,6 @@ spec:
   selector:
     role: db
   ports:
-  - port: 5432
-    protocol: TCP
-    targetPort: 5432
+    - port: 5432
+      protocol: TCP  # TCP is the default; can be omitted
+      targetPort: 5432  # targetPort is the same as port by default; can be omitted
